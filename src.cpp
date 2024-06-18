@@ -1,4 +1,4 @@
-﻿#include <windows.h>
+#include <windows.h>
 #include <exedit.hpp>
 
 inline static char name[] = "残響オブジェクト";
@@ -25,11 +25,6 @@ inline static struct {
     // void(__cdecl* RestoreFilter)(ExEdit::Object* obj, int filter_idx, int* track_ptr, int* check_ptr, void* exdata_ptr) = (decltype(RestoreFilter))0x48230;
 }ee;
 
-
-int get_exedit_dll_hinst(ExEdit::Filter* efp) {
-    constexpr int exedit92_exfunc_address = 0xa41e0;
-    return (int)efp->exfunc - exedit92_exfunc_address;
-}
 
 int get_object_idx(ExEdit::Object* obj) {
     return ((int)obj - (int)*ee.ObjectArrayPointer) / sizeof(*obj);
@@ -126,7 +121,7 @@ BOOL func_proc(ExEdit::Filter* efp, ExEdit::FilterProcInfo* efpip) {
     return FALSE;
 }
 BOOL func_init(ExEdit::Filter* efp) {
-    int exedit_dll_hinst = get_exedit_dll_hinst(efp);
+    int exedit_dll_hinst = (int)efp->exedit_fp->dll_hinst;
     int* ptr = (int*)&ee;
     for (int i = sizeof(ee) >> 2; 0 < i; i--) {
         *ptr += exedit_dll_hinst;
